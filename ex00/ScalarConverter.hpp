@@ -1,0 +1,29 @@
+#ifndef SCALARCONVERTER_HPP
+#define SCALARCONVERTER_HPP
+
+#include <string>
+#include <iostream>
+
+class ScalarConverter {
+    private:
+        // DEFAULT_CONSTRUCTOR
+        ScalarConverter();
+
+        // PARAMETIZED_CONSTRUCTOR
+        ScalarConverter(std::string const &name, int grade);
+
+        // COPY
+        ScalarConverter(const ScalarConverter &original);
+        ScalarConverter &operator=(const ScalarConverter &original);
+
+        // DESTRUCTOR
+        ~ScalarConverter();
+
+    public:
+        static void convert(std::string s);
+
+} ;
+
+std::ostream& operator<<(std::ostream& output, const ScalarConverter& bureau);
+
+#endif
