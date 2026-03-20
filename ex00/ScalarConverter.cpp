@@ -22,13 +22,81 @@ ScalarConverter& ScalarConverter::operator=(const ScalarConverter &original) {
     return *this;
 }
 
+/* print */
+
+void printAllImpossible() {
+    std::cout << "char: impossible\nint: impossible\nfloat: impossible\ndouble: impossible\n";
+}
+
+bool isDisplayable(int c) {
+    if(c >= 32 && c <= 126)
+        return true;
+    return false;
+}
+
+void printFromChar(char c){
+    std::cout << "char: '" << c << "'" << std::endl;
+    std::cout << "int: " << static_cast<int>(c) << std::endl;
+	std::cout << "float: " << static_cast<float>(c) << ".0f" << std::endl;
+	std::cout << "double: " << static_cast<double>(c) << ".0" << std::endl;
+}
+
+void printFromInt(long n, bool valid) {
+    if (!valid || n < std::numeric_limits<int>::min() || n > std::numeric_limits<int>::max()) {
+        printAllImpossible();
+        return;
+    }
+    int x = static_cast<int>(n);
+    if(isDisplayable(x)) {
+        char c = static_cast<char>(x);
+        std::cout << "char: '" << c << "'" << std::endl;
+    }
+    else {
+        if(x >= 0 && x <= 127)
+            std::cout << "char: non displayable" << std::endl;
+        else
+            std::cout << "char: non displayable" << std::endl;
+    }
+    std::cout << "int: " << x << std::endl;
+    std::cout << "float: " << static_cast<float>(x) << ".0f" << std::endl;
+    std::cout << "double: " << static_cast<double>(x) << ".0" << std::endl;
+    return;
+}
+
+void printFromFloat(double n, bool valid) {
+    if (!valid ) {
+        printAllImpossible();
+        return;
+    }
+    float x = static_cast<float>(n);
+    if(isDisplayable(x)) {
+        char c = static_cast<char>(x);
+        std::cout << "char: '" << c << "'" << std::endl;
+    }
+    else {
+        if(x < 0 || x > 127)
+            std::cout << "char: impossible" << std::endl;
+        else
+            std::cout << "char: non displayable" << std::endl;
+    }
+    if (n > std::numeric_limits<int>::min() || n < std::numeric_limits<int>::max()) {
+        int i = static_cast<int>(x);
+        std::cout << "int: " << i << std::endl;
+    }
+    else
+        std::cout << "int: impossible" << std::endl;
+    std::cout << std::fixed << std::setprecision(1);
+    std::cout << "float: " << static_cast<float>(x) << "f" << std::endl;
+    std::cout << "double: " << x << "" << std::endl;
+    return;
+}
+
+void printFromDouble(double n, bool valid) {
+
+}
 
 bool isChar(std::string s) {
-    if(s.empty())
-        return false;
-    if(s.length() != 1)
-        return false;
-    if((s[0]) > 0 && (s[0]) < 127)
+    if(s.size() == 1 && !std::isdigit(static_cast<unsigned char>(s[0])))
         return true;
     return false;
 }
@@ -40,15 +108,19 @@ bool isInt(std::string s) {
     size_t i = 0;
 
     if(s[i] == '+' || s[i] == '-') {
-        if(s.length() == 1)
-            return false;
+        if(s.length() == 1) return false;
         i++;
     }
         
     for(; i < s.length(); i++) {
-        if(!std::isdigit(s[i]))
-            return false;
+        if(!std::isdigit(s[i])) return false;
     }
+    errno = 0;
+    char *end = NULL;
+    long v = std::strtol(s.c_str(), &end, 10);
+    if (errno != 0) return false;
+    if (v < INT_MIN || v > INT_MAX) return false;
+    if(*end != '\0') return false;
     return true;
 }
 
@@ -104,8 +176,13 @@ bool isDouble(std::string s) {
     return true;
 }
 
-bool isPseudo(std::string s) {
-    if (s == "-inf" || s == "+inf" || s == "nan" || s == "inff" || s == "-inff" || s == "+inff" || s == "nanf" || s == "inff") return true;
+bool isPseudoFloat(std::string s) {
+    if (s == "inff" || s == "-inff" || s == "+inff" || s == "nanf") return true;
+    return false;
+}
+
+bool isPseudoDouble(std::string s) {
+    if (s == "-inf" || s == "+inf" || s == "nan" || s == "inf") return true;
     return false;
 }
 
@@ -114,13 +191,43 @@ void ScalarConverter::convert(std::string s) {
 
     // 1. DETECCIÓN Y RELLENADO
     if (isChar(s)) {
-        item = static_cast<double>(s[0]);
-    } else if (isInt(s) || isFloat(s) || isDouble(s) || isPseudo(s)) {
-    
+        char c = s[0];
+        printFromChar(c);
+    } 
+    else if (isInt(s)) {
+        char *end = NULL;
+        errno = 0;
+        bool valid = false;
+        long n = strtol(s.c_str(), &end, 10);
+        if(errno == 0 && end && *end == '\0') valid = true;
+        else valid = false;
+        printFromInt(n, valid);
     }
-    else {
+    else if (isFloat(s)) {
+        char *end = NULL;
+        errno = 0;
+        bool valid;
+        long n = strtod(s.c_str(), &end);
+        if(errno == 0 && end && *end == '\0') valid = true;
+        else valid = false;
+        printFromFloat(n, valid);
+    }
+    else if (isDouble(s)) {
+        char *end = NULL;
+        errno = 0;
+        bool valid;
+        long n = strtod(s.c_str(), &end);
+        if(errno == 0 && end && *end == '\0') valid = true;
+        else valid = false;
+        printFromDouble(n, valid);
+    }
+    else if (isPseudoDouble(s)){
         //pseudo-literales como nan, +inf, etc.
         // O dejas que atof los maneje si son estándar.
+        printFromDouble(n, valid);
+    }
+    else if (isPseudoFloat(s)) {
+        printFromFloat(n, valid);
     }
 
     // 2. IMPRESIÓN CONTROLADA

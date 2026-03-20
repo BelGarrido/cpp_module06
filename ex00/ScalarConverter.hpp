@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 #include <limits>
+#include <climits>
+#include <iomanip>
 
 class ScalarConverter {
     private:
