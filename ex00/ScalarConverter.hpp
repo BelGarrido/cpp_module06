@@ -6,12 +6,12 @@
 #include <limits>
 #include <climits>
 #include <iomanip>
+#include <errno.h>
+#include <stdlib.h>
 
 class ScalarConverter {
     private:
-        // DEFAULT_CONSTRUCTOR
-        ScalarConverter();
-
+    
         // PARAMETIZED_CONSTRUCTOR
         ScalarConverter(std::string const &name, int grade);
 
@@ -23,6 +23,9 @@ class ScalarConverter {
         ~ScalarConverter();
 
     public:
+        // DEFAULT_CONSTRUCTOR
+        ScalarConverter();
+
         static void convert(std::string s);
 
 } ;

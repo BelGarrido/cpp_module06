@@ -4,7 +4,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 NAME = bureau
 
 SRC = main.cpp \
-	Bureaucrat.cpp \
+	ScalarConverter.cpp \
 
 OBJ_DIR = obj
 

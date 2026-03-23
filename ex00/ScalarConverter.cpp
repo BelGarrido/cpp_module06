@@ -22,13 +22,13 @@ ScalarConverter& ScalarConverter::operator=(const ScalarConverter &original) {
     return *this;
 }
 
-/* print */
+// PRINT FUNCTIONS
 
 void printAllImpossible() {
     std::cout << "char: impossible\nint: impossible\nfloat: impossible\ndouble: impossible\n";
 }
 
-bool isDisplayable(int c) {
+bool isDisplayable(double c) {
     if(c >= 32 && c <= 126)
         return true;
     return false;
@@ -55,7 +55,7 @@ void printFromInt(long n, bool valid) {
         if(x >= 0 && x <= 127)
             std::cout << "char: non displayable" << std::endl;
         else
-            std::cout << "char: non displayable" << std::endl;
+            std::cout << "char: impossible" << std::endl;
     }
     std::cout << "int: " << x << std::endl;
     std::cout << "float: " << static_cast<float>(x) << ".0f" << std::endl;
@@ -64,7 +64,7 @@ void printFromInt(long n, bool valid) {
 }
 
 void printFromFloat(double n, bool valid) {
-    if (!valid ) {
+    if (!valid) {
         printAllImpossible();
         return;
     }
@@ -74,33 +74,68 @@ void printFromFloat(double n, bool valid) {
         std::cout << "char: '" << c << "'" << std::endl;
     }
     else {
-        if(x < 0 || x > 127)
+        if(!isDisplayable(n))
             std::cout << "char: impossible" << std::endl;
         else
             std::cout << "char: non displayable" << std::endl;
     }
-    if (n > std::numeric_limits<int>::min() || n < std::numeric_limits<int>::max()) {
+    if (n > std::numeric_limits<int>::min() && n < std::numeric_limits<int>::max()) {
         int i = static_cast<int>(x);
         std::cout << "int: " << i << std::endl;
     }
     else
         std::cout << "int: impossible" << std::endl;
-    std::cout << std::fixed << std::setprecision(1);
+    //std::cout << std::fixed << std::setprecision(1);
     std::cout << "float: " << static_cast<float>(x) << "f" << std::endl;
     std::cout << "double: " << x << "" << std::endl;
     return;
 }
 
 void printFromDouble(double n, bool valid) {
-
+    if (!valid) {
+        printAllImpossible();
+        return;
+    }
+    if(isDisplayable(n)) {
+        char c = static_cast<char>(n);
+        std::cout << "char: '" << c << "'" << std::endl;
+    }
+    else {
+        if(n < 0 || n > 127)
+            std::cout << "char: impossible" << std::endl;
+        else
+            std::cout << "char: non displayable" << std::endl;
+    }
+    if (n > std::numeric_limits<int>::min() && n < std::numeric_limits<int>::max()) {
+        int i = static_cast<int>(n);
+        std::cout << "int: " << i << std::endl;
+    }
+    else
+        std::cout << "int: impossible" << std::endl;
+    //std::cout << std::fixed << std::setprecision(1);
+    std::cout << "float: " << static_cast<float>(n) << "f" << std::endl;
+    std::cout << "double: " << n << std::endl;
+    return;
 }
 
+
+
+
+
+
+
+
+
+
+
+// IS CHAR -----------------------------------------
 bool isChar(std::string s) {
     if(s.size() == 1 && !std::isdigit(static_cast<unsigned char>(s[0])))
         return true;
     return false;
 }
 
+// IS INT -----------------------------------------
 bool isInt(std::string s) {
     if(s.empty())
         return false;
@@ -124,6 +159,7 @@ bool isInt(std::string s) {
     return true;
 }
 
+// IS FLOAT -----------------------------------------
 bool isFloat(std::string s) {
     if (s.length() < 2 || s[s.length() - 1] != 'f') return false;
 
@@ -151,6 +187,7 @@ bool isFloat(std::string s) {
     return true;
 }
 
+// IS DOUBLE -----------------------------------------
 bool isDouble(std::string s) {
     int dotCount = 0;
 
@@ -187,54 +224,25 @@ bool isPseudoDouble(std::string s) {
 }
 
 void ScalarConverter::convert(std::string s) {
-    double item;
 
-    // 1. DETECCIÓN Y RELLENADO
     if (isChar(s)) {
         char c = s[0];
         printFromChar(c);
     } 
-    else if (isInt(s)) {
+    else if (isInt(s) || isFloat(s) || isDouble(s) ) {
         char *end = NULL;
         errno = 0;
         bool valid = false;
-        long n = strtol(s.c_str(), &end, 10);
-        if(errno == 0 && end && *end == '\0') valid = true;
+        double n = strtod(s.c_str(), &end);
+        if(errno == 0 && end && (*end == '\0' || *end == 'f')) valid = true;
         else valid = false;
-        printFromInt(n, valid);
+        std::cout << valid << std::endl;
+        if(isInt(s)) printFromInt(n, valid);
+        else if(isFloat(s)) printFromFloat(n, valid);
+        else if(isDouble(s)) printFromDouble(n, valid);
     }
-    else if (isFloat(s)) {
-        char *end = NULL;
-        errno = 0;
-        bool valid;
-        long n = strtod(s.c_str(), &end);
-        if(errno == 0 && end && *end == '\0') valid = true;
-        else valid = false;
-        printFromFloat(n, valid);
-    }
-    else if (isDouble(s)) {
-        char *end = NULL;
-        errno = 0;
-        bool valid;
-        long n = strtod(s.c_str(), &end);
-        if(errno == 0 && end && *end == '\0') valid = true;
-        else valid = false;
-        printFromDouble(n, valid);
-    }
-    else if (isPseudoDouble(s)){
-        //pseudo-literales como nan, +inf, etc.
-        // O dejas que atof los maneje si son estándar.
-        printFromDouble(n, valid);
-    }
-    else if (isPseudoFloat(s)) {
-        printFromFloat(n, valid);
-    }
-
-    // 2. IMPRESIÓN CONTROLADA
-    printChar(item);
-    printInt(item);
-    printFloat(item);
-    printDouble(item);
+    else
+        printAllImpossible();
 }
 
 
@@ -247,7 +255,6 @@ float: 42.0f
 double: 42.0 */
 
 /* ./convert 4.242
-
 
 char: Non displayable
 int: 4
