@@ -1,5 +1,5 @@
 #include "ScalarConverter.hpp"
-#include "data.hpp"
+#include "Data.hpp"
 #include "Serializer.hpp"
 
 
@@ -8,7 +8,7 @@ int main() {
 /*     (void)argc;
     std::string input = argv[1];
     ScalarConverter::convert(argv[1]); */
-
+    std::srand(std::time(NULL));
     Data newData;
     newData.id = 101;
     newData.name = "trial";
