@@ -1,13 +1,11 @@
 #include "ScalarConverter.hpp"
 #include "Data.hpp"
 #include "Serializer.hpp"
-
+#include "Base.hpp"
+#include <ctime>
 
 int main() {
     
-/*     (void)argc;
-    std::string input = argv[1];
-    ScalarConverter::convert(argv[1]); */
     std::srand(std::time(NULL));
     Data newData;
     newData.id = 101;
@@ -24,6 +22,14 @@ int main() {
     std::cout << "newPtrData(data* from uintptr_t): " << newPtrData << std::endl;
     std::cout << "newPtrData->id: " << newPtrData->id << std::endl;
     std::cout << "newPtrData->name: " << newPtrData->name << std::endl;
+
+    std::cout << "-------------------Dynamic_cast-------------------" << std::endl;
+
+    Base *newBase = generate();
+    identify(newBase);
+    Base &ref = *newBase;
+    identify(ref);
+    return 0;
 }
 
 

@@ -6,6 +6,7 @@ NAME = serial
 SRC = main.cpp \
 	ScalarConverter2.cpp \
 	Serializer.cpp \
+	Base.cpp \
 
 OBJ_DIR = obj
 
