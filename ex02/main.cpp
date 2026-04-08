@@ -23,7 +23,7 @@ int main() {
     std::cout << "newPtrData->id: " << newPtrData->id << std::endl;
     std::cout << "newPtrData->name: " << newPtrData->name << std::endl;
 
-    std::cout << "-------------------Dynamic_cast-------------------" << std::endl;
+    std::cout << "------------------- Dynamic_cast -------------------" << std::endl;
 
     Base *newBase = generate();
     identify(newBase);
@@ -31,14 +31,3 @@ int main() {
     identify(ref);
     return 0;
 }
-
-
-/* Creas un objeto Data myData.
-
-Guardas su dirección en un puntero: Data* ptr = &myData;.
-
-Serializas: Conviertes ese puntero en un número: uintptr_t raw = Serializer::serialize(ptr);.
-
-Deserializas: Conviertes el número otra vez en puntero: Data* result = Serializer::deserialize(raw);.
-
-Compruebas: Si result == ptr, ¡has ganado! La dirección de memoria ha sobrevivido al viaje de ida y vuelta. */

@@ -1,6 +1,4 @@
-#include "Base.hpp"
 #include <cstdlib>
-
 #include "A.hpp"
 #include "B.hpp"
 #include "C.hpp"
@@ -29,9 +27,11 @@ Base * generate(void) {
     return ptr;
 }
 
-
 // dynamic_cast<A*>(p) → succeeds if p is really an A
 //                     → returns nullptr if it's not
+
+// dynamic_cast<A&>(p) → succeeds if p is really an A
+//                     → returns an exeption
 
 void identify(Base* p) {
 
