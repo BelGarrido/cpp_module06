@@ -3,6 +3,8 @@
 
 #include "Data.hpp"
 #include <stdint.h>
+#include <string>
+#include <iostream>
 
 class Serializer {
     public:
@@ -14,7 +16,5 @@ class Serializer {
         Serializer& operator=(const Serializer& other);
         ~Serializer();
 };
-
-
 
 #endif

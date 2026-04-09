@@ -4,7 +4,6 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 NAME = serial
 
 SRC = main.cpp \
-	ScalarConverter2.cpp \
 	Serializer.cpp \
 
 OBJ_DIR = obj

@@ -1,11 +1,9 @@
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
-NAME = serial
+NAME = dynamic
 
 SRC = main.cpp \
-	ScalarConverter2.cpp \
-	Serializer.cpp \
 	Base.cpp \
 
 OBJ_DIR = obj

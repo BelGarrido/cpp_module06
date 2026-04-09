@@ -1,16 +1,145 @@
-#include <iostream>
-#include <string>
+#include "ScalarConverter.hpp"
 
-bool isChar(std::string s) {
-    if(s.empty())
-        return false;
-    if(s.length() != 1)
-        return false;
-    if((s[0]) > 0 && (s[0]) < 127)
+//______________________ DEFAULT_CONSTRUCTOR__
+
+ScalarConverter::ScalarConverter() {
+}
+
+//_________________________________DESTRUCTOR__
+
+ScalarConverter::~ScalarConverter() {
+}
+
+//_______________________________________COPY__
+
+ScalarConverter::ScalarConverter(const ScalarConverter &original) {
+    (void)original;
+}
+
+// Name is const, so only grade can be reassigned
+ScalarConverter& ScalarConverter::operator=(const ScalarConverter &original) {
+    (void)original;
+    return *this;
+}
+
+// PRINT FUNCTIONS
+
+void printAllImpossible() {
+    std::cout << "char: impossible\nint: impossible\nfloat: impossible\ndouble: impossible\n";
+}
+
+bool isDisplayable(double c) {
+    if(c >= 32 && c <= 126)
         return true;
     return false;
 }
 
+void printFromChar(char c){
+    std::cout << "char: '" << c << "'" << std::endl;
+    std::cout << "int: " << static_cast<int>(c) << std::endl;
+	std::cout << "float: " << static_cast<float>(c) << ".0f" << std::endl;
+	std::cout << "double: " << static_cast<double>(c) << ".0" << std::endl;
+}
+
+void printFromInt(long n, bool valid) {
+    if (!valid || n < std::numeric_limits<int>::min() || n > std::numeric_limits<int>::max()) {
+        printAllImpossible();
+        return;
+    }
+    int x = static_cast<int>(n);
+    if(isDisplayable(x)) {
+        char c = static_cast<char>(x);
+        std::cout << "char: '" << c << "'" << std::endl;
+    }
+    else {
+        if(x >= 0 && x <= 127)
+            std::cout << "char: non displayable" << std::endl;
+        else
+            std::cout << "char: impossible" << std::endl;
+    }
+    std::cout << "int: " << x << std::endl;
+    std::cout << "float: " << static_cast<float>(x) << ".0f" << std::endl;
+    std::cout << "double: " << static_cast<double>(x) << ".0" << std::endl;
+    return;
+}
+
+void printFromFloat(double n, bool valid) {
+    if (!valid) {
+        printAllImpossible();
+        return;
+    }
+    float x = static_cast<float>(n);
+    if(isDisplayable(x)) {
+        char c = static_cast<char>(x);
+        std::cout << "char: '" << c << "'" << std::endl;
+    }
+    else {
+        if(!isDisplayable(n))
+            std::cout << "char: impossible" << std::endl;
+        else
+            std::cout << "char: non displayable" << std::endl;
+    }
+    if (n > std::numeric_limits<int>::min() && n < std::numeric_limits<int>::max()) {
+        int i = static_cast<int>(x);
+        std::cout << "int: " << i << std::endl;
+    }
+    else
+        std::cout << "int: impossible" << std::endl;
+    //std::cout << std::fixed << std::setprecision(1);
+    std::cout << "float: " << static_cast<float>(x) << "f" << std::endl;
+    std::cout << "double: " << x << "" << std::endl;
+    return;
+}
+
+void printFromDouble(double n, bool valid) {
+    if (!valid) {
+        printAllImpossible();
+        return;
+    }
+    if(isDisplayable(n)) {
+        char c = static_cast<char>(n);
+        std::cout << "char: '" << c << "'" << std::endl;
+    }
+    else {
+        if(n < 0 || n > 127)
+            std::cout << "char: impossible" << std::endl;
+        else
+            std::cout << "char: non displayable" << std::endl;
+    }
+    if (n > std::numeric_limits<int>::min() && n < std::numeric_limits<int>::max()) {
+        int i = static_cast<int>(n);
+        std::cout << "int: " << i << std::endl;
+    }
+    else
+        std::cout << "int: impossible" << std::endl;
+    std::cout << "float: " << static_cast<float>(n) << "f" << std::endl;
+    std::cout << "double: " << n << std::endl;
+    return;
+}
+
+void printFromPseudoFloat(std::string s) {
+    std::cout << "char: impossible" << std::endl;
+    std::cout << "int: impossible" << std::endl;
+    std::cout << "float: " << s << std::endl;
+    std::string d = s.substr(0, s.length() - 1);
+    std::cout << "double: " << d << std::endl;
+}
+
+void printFromPseudoDouble(std::string s) {
+    std::cout << "char: impossible" << std::endl;
+    std::cout << "int: impossible" << std::endl;
+    std::cout << "float: " << s << "f" << std::endl;
+    std::cout << "double: " << s << std::endl;
+}
+
+// IS CHAR -----------------------------------------
+bool isChar(std::string s) {
+    if(s.size() == 1 && !std::isdigit(static_cast<unsigned char>(s[0])))
+        return true;
+    return false;
+}
+
+// IS INT -----------------------------------------
 bool isInt(std::string s) {
     if(s.empty())
         return false;
@@ -18,20 +147,24 @@ bool isInt(std::string s) {
     size_t i = 0;
 
     if(s[i] == '+' || s[i] == '-') {
-        if(s.length() == 1)
-            return false;
+        if(s.length() == 1) return false;
         i++;
     }
         
     for(; i < s.length(); i++) {
-        if(!std::isdigit(s[i]))
-            return false;
+        if(!std::isdigit(s[i])) return false;
     }
+    errno = 0;
+    char *end = NULL;
+    long v = std::strtol(s.c_str(), &end, 10);
+    if (errno != 0) return false;
+    if (v < INT_MIN || v > INT_MAX) return false;
+    if(*end != '\0') return false;
     return true;
 }
 
+// IS FLOAT -----------------------------------------
 bool isFloat(std::string s) {
-    if (s == "-inff" || s == "+inff" || s == "nanf" || s == "inff") return true;
     if (s.length() < 2 || s[s.length() - 1] != 'f') return false;
 
     int dotCount = 0;
@@ -58,9 +191,8 @@ bool isFloat(std::string s) {
     return true;
 }
 
+// IS DOUBLE -----------------------------------------
 bool isDouble(std::string s) {
-if (s == "-inf" || s == "+inf" || s == "nan" || s == "inff") return true;
-
     int dotCount = 0;
 
     if(s[0] == '.') {
@@ -85,62 +217,36 @@ if (s == "-inf" || s == "+inf" || s == "nan" || s == "inff") return true;
     return true;
 }
 
-#include <iostream>
-#include <string>
-#include <iomanip>
-
-
-// Función auxiliar para que el test sea legible
-void printTest(std::string label, std::string value, bool result) {
-    std::cout << std::left << std::setw(10) << label 
-              << " [" << std::setw(12) << value << "] -> " 
-              << (result ? "\033[32mTRUE\033[0m" : "\033[31mFALSE\033[0m") 
-              << std::endl;
+bool isPseudoFloat(std::string s) {
+    if (s == "inff" || s == "-inff" || s == "+inff" || s == "nanf") return true;
+    return false;
 }
 
-
-int main()
-{
-    // Variables originales
-    std::string a = "1293";
-    std::string b = ".9f";
-    std::string c = "10.f";
-    std::string d = "1.23223434f";
-    std::string e = "1.2";
-    std::string f = "-1.f";
-    std::string g = "v";
-    std::string h = "1";
-    std::string i = "hola";
-
-    // Nuevas variables para Double y casos borde
-    std::string b1 = ".9f";        // Esto es un float, isDouble debe dar 0
-    std::string c1 = "10";         // Esto es un int, isDouble debe dar 0 (o 1 según tu lógica de punto)
-    std::string d1 = "1.23223434"; // Double estándar
-    std::string d2 = ".23223434";  // Double sin parte entera
-    std::string d3 = "42.";        // Double sin parte decimal
-    std::string d4 = "nan";        // Pseudo-literal Double
-    std::string d5 = "-inf";       // Pseudo-literal Double
-
-    std::cout << "--- TEST CHAR ---" << std::endl;
-    std::cout << "isChar(g) [v]: " << isChar(g) << std::endl;
-    std::cout << "isChar(h) [1]: " << isChar(h) << std::endl;
-
-    std::cout << "\n--- TEST INT ---" << std::endl;
-    std::cout << "isInt(a) [1293]: " << isInt(a) << std::endl;
-    std::cout << "isInt(h) [1]:    " << isInt(h) << std::endl;
-
-    std::cout << "\n--- TEST FLOAT ---" << std::endl;
-    std::cout << "isFloat(b) [.9f]:  " << isFloat(b) << std::endl;
-    std::cout << "isFloat(d) [1.23f]:" << isFloat(d) << std::endl;
-    std::cout << "isFloat(e) [1.2]:  " << isFloat(e) << " (Debe ser 0)" << std::endl;
-
-    std::cout << "\n--- TEST DOUBLE ---" << std::endl;
-    std::cout << "isDouble(d1) [1.2322]: " << isDouble(d1) << std::endl;
-    std::cout << "isDouble(d2) [.2322]:  " << isDouble(d2) << std::endl;
-    std::cout << "isDouble(d3) [42.]:    " << isDouble(d3) << std::endl;
-    std::cout << "isDouble(b1) [.9f]:    " << isDouble(b1) << " (Debe ser 0)" << std::endl;
-    std::cout << "isDouble(d4) [nan]:    " << isDouble(d4) << std::endl;
-    std::cout << "isDouble(d5) [-inf]:   " << isDouble(d5) << std::endl;
-
-    return 0;
+bool isPseudoDouble(std::string s) {
+    if (s == "-inf" || s == "+inf" || s == "nan" || s == "inf") return true;
+    return false;
 }
+
+void ScalarConverter::convert(std::string s) {
+
+    if (isChar(s)) {
+        char c = s[0];
+        printFromChar(c);
+    } 
+    else if (isInt(s) || isFloat(s) || isDouble(s)) {
+        char *end = NULL;
+        errno = 0;
+        bool valid = false;
+        double n = strtod(s.c_str(), &end);
+        if(errno == 0 && end && (*end == '\0' || *end == 'f')) valid = true;
+        else valid = false;
+        if(isInt(s)) printFromInt(n, valid);
+        else if(isFloat(s)) printFromFloat(n, valid);
+        else if(isDouble(s)) printFromDouble(n, valid);
+    }
+    else if(isPseudoDouble(s)) printFromPseudoDouble(s);
+    else if(isPseudoFloat(s)) printFromPseudoFloat(s);
+    else
+        printAllImpossible();
+}
+

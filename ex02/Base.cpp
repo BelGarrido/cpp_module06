@@ -1,17 +1,10 @@
-#include <cstdlib>
+
 #include "A.hpp"
 #include "B.hpp"
 #include "C.hpp"
-#include <exception>
-#include <iostream>
 
-
-Base::Base() {
-
-}
-Base::~Base() {
-
-}
+Base::Base() {}
+Base::~Base() {}
 
 Base * generate(void) {
     Base *ptr = NULL;

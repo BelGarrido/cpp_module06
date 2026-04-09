@@ -4,7 +4,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 NAME = scalar
 
 SRC = main.cpp \
-	ScalarConverter2.cpp \
+	ScalarConverter.cpp \
 
 OBJ_DIR = obj
 

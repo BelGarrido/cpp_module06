@@ -1,7 +1,10 @@
 #ifndef BASE_HPP
 #define BASE_HPP
 
-#include <ostream>
+#include <exception>
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 class Base {
     public:
