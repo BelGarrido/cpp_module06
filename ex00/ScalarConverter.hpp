@@ -8,6 +8,9 @@
 #include <iomanip>
 #include <errno.h>
 #include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
+
 
 class ScalarConverter {
     private:

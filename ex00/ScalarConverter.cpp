@@ -1,9 +1,4 @@
 #include "ScalarConverter.hpp"
-#include <iostream>
-#include <iomanip>
-#include <cmath>
-#include <limits>
-#include <cstdlib>
 
 // Static utility-style class: constructor/destructor stay trivial.
 ScalarConverter::ScalarConverter() {}
@@ -28,7 +23,7 @@ void ScalarConverter::convert(std::string s) {
         // - If remaining chars are not empty (or exactly one trailing 'f'), input is invalid.
         // This keeps literals like 42.0f valid, but rejects tails like "42abc".
         if (s.c_str() == end || (*end != '\0' && !(*end == 'f' && *(end + 1) == '\0'))) {
-            std::cout << "char: impossible\nint: impossible\nfloat: nanf\ndouble: nan\n";
+            std::cout << "char: impossible\nint: impossible\nfloat: impossible\ndouble: impossible\n";
             return;
         }
     }
@@ -58,7 +53,9 @@ void ScalarConverter::convert(std::string s) {
         std::cout << "double: " << n << ".0" << std::endl;
     } else {
         std::cout << "float: " << f << "f" << std::endl;
-        std::cout << "double: " << n << std::endl;
+        std::cout << "double: "
+         << std::setprecision(6)
+         << n << std::endl;
     }
 }
 

@@ -6,7 +6,7 @@
 Base::Base() {}
 Base::~Base() {}
 
-Base * generate(void) {
+Base *generate(void) {
     Base *ptr = NULL;
     int random = std::rand() % 3;
     if(random == 0) {
@@ -20,14 +20,17 @@ Base * generate(void) {
     return ptr;
 }
 
-// dynamic_cast<A*>(p) → succeeds if p is really an A
-//                     → returns nullptr if it's not
+// `dynamic_cast` with a pointer:
+// - Returns a valid pointer if the object is of that type.
+// - Returns NULL if the object is not of that type.
 
-// dynamic_cast<A&>(p) → succeeds if p is really an A
-//                     → returns an exeption
+// `dynamic_cast` with a reference:
+// - Returns a valid reference if the object is of that type.
+// - Throws an exception (`std::bad_cast`) if it is not.
 
 void identify(Base* p) {
-
+    // Pointer version: test each type with `dynamic_cast<...*>(p)`.
+    // No exceptions are used here; failed casts simply return NULL.
     if (dynamic_cast<A*>(p))
         std::cout << "It's type A" << std::endl;
     else if (dynamic_cast<B*>(p)) 
@@ -39,6 +42,8 @@ void identify(Base* p) {
 }
 
 void identify(Base& p) {
+    // Reference version: each failed cast throws, so we use nested try/catch
+    // blocks to continue checking the next possible derived type.
     try {
         A& ref = dynamic_cast<A&>(p);
         std::cout << "It's type A" << std::endl;
